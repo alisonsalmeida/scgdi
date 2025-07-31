@@ -1,5 +1,6 @@
 from gmqtt import Client as MQTTClient
 
+import uuid
 import asyncio
 
 
@@ -11,7 +12,7 @@ class MQTTChannel:
 		self.host = 'lse.dev.br'
 		self.port = 1883
 
-		self.client = MQTTClient('client_id')
+		self.client = MQTTClient(uuid.uuid4().hex)
 		self.client.on_connect = self.on_connect
 		self.client.on_message = self.on_message
 		self.client.on_disconnect = self.on_disconnect
@@ -27,7 +28,7 @@ class MQTTChannel:
 	def on_message(self, client, topic, payload, qos, properties):
 		print(f'received message: {payload} from topic: {topic}')
 
-	def on_disconnect(self):
+	def on_disconnect(self, client, packet, exc=None):
 		pass
 
 	def on_subscribe(self, client, mid, qos, properties):
