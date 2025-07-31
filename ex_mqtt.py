@@ -26,7 +26,8 @@ class MQTTChannel:
 		print(f'connected with success in: {self.host} result code: {rc} ')
 
 	def on_message(self, client, topic, payload, qos, properties):
-		print(f'received message: {payload} from topic: {topic}')
+		pass
+		# print(f'received message: {payload} from topic: {topic}')
 
 	def on_disconnect(self, client, packet, exc=None):
 		pass
