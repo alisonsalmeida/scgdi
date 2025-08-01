@@ -7,11 +7,11 @@ Implemente uma classe MQTTSensorClient que:
 
     Assina tópicos relacionados a três sensores:
 
-        sensor/vibracao
+        scgdi/sensor/vibracao
 
-        sensor/energia
+        scgdi/sensor/energia
 
-        sensor/ambiente
+        scgdi/sensor/ambiente
 
     Sempre que uma mensagem for recebida, ela é colocada em uma fila asyncio.Queue;
 
@@ -78,14 +78,14 @@ pip install gmqtt
 ```bash
 [MQTT] Conectado ao broker.
 [MQTT] Assinado aos tópicos dos sensores.
-[MQTT] Mensagem recebida de sensor/vibracao: {"valor": 3.5}
-[CONSUMER] Processando dado: tópico=sensor/vibracao, valor=3.5
+[MQTT] Mensagem recebida de scgdi/sensor/vibracao: {"valor": 3.5}
+[CONSUMER] Processando dado: tópico=scgdi/sensor/vibracao, valor=3.5
 
-[MQTT] Mensagem recebida de sensor/energia: {"valor": 120}
-[CONSUMER] Processando dado: tópico=sensor/energia, valor=120
+[MQTT] Mensagem recebida de scgdi/sensor/energia: {"valor": 120}
+[CONSUMER] Processando dado: tópico=scgdi/sensor/energia, valor=120
 
-[MQTT] Mensagem recebida de sensor/ambiente: {"temperatura": 22.5, "umidade": 55}
-[CONSUMER] Processando dado: tópico=sensor/ambiente, temperatura=22.5, umidade=55
+[MQTT] Mensagem recebida de scgdi/sensor/ambiente: {"temperatura": 22.5, "umidade": 55}
+[CONSUMER] Processando dado: tópico=scgdi/sensor/ambiente, temperatura=22.5, umidade=55
 
 ```
 
