@@ -1,13 +1,64 @@
+from ex_mqtt import MQTTChannel
+
+
 import asyncio
 import logging
+import json
+
 
 from asyncua import Server
+
+
+def callback_mqtt_message_handler(nodes, client, topic, payload: bytes, qos, properties):
+    print(f"Received message on topic {topic}: {payload}")
+
+    """
+    {
+        "scgdi/sensor/electrical": {
+            "Voltage": 220.0,
+            "Current": 10.0,
+            "Power": 2200.0
+        },
+        "scgdi/sensor/vibration": {
+            "Accell_X": 0.01,
+            "Accell_Y": 0.02,
+            "Accell_Z": 0.03
+        },
+        "scgdi/sensor/environment": {
+            "Temperature": 25.0,
+            "Humidity": 50.0
+        }
+    }
+    """
+    message = payload.decode('utf-8')
+    try:
+        data: dict = json.loads(message)
+
+        for name, value in data.items():
+            if name in nodes:
+                asyncio.create_task(nodes[name].set_value(value))
+    
+    except json.JSONDecodeError:
+        print("Invalid JSON received")
+
+
+async def mqtt_init():
+    mqtt_channel = MQTTChannel()
+    await mqtt_channel.init()
+
+    mqtt_channel.client.subscribe('scgdi/sensor/electrical')
+    mqtt_channel.client.subscribe('scgdi/sensor/vibration')
+    mqtt_channel.client.subscribe('scgdi/sensor/environment')
+
+    return mqtt_channel
 
 async def main():
     _logger = logging.getLogger(__name__)
     # setup our server
     server = Server()
     await server.init()
+    mqtt_channel = await mqtt_init()
+
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
 
     # set up our own namespace, not really necessary but should as spec
@@ -25,19 +76,6 @@ async def main():
     environmental_variables = ["Temperature", "Humidity"]
     vibration_variables = ["Accell_X", "Accell_Y", "Accell_Z"]
     
-    # nodes_variables = {
-    #     "Electrical": {
-    #         "Voltage": {
-    #             "node": None,
-	# 			"value": 0.0
-	# 		},
-	# 		"Current": {
-	# 			"node": None,
-	# 			"value": 0.0
-	# 		}
-	# 	},
-	# }
-    
     nodes_variables = {}
     
     smc = {
@@ -54,7 +92,8 @@ async def main():
             nodes_variables[variable] = node_val
             
     print("Nodes Variables:", nodes_variables)
-    
+    mqtt_channel.client.on_message = lambda *args: callback_mqtt_message_handler(nodes_variables, *args)
+
     _logger.info("Starting server!")
     async with server:
         while True:
