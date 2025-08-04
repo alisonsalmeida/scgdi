@@ -1,16 +1,14 @@
 from ex_mqtt import MQTTChannel
-
+from ex_opcua_hda import HistoryMongoDB
+from asyncua import Server
 
 import asyncio
 import logging
 import json
 
 
-from asyncua import Server
-
-
 def callback_mqtt_message_handler(nodes, client, topic, payload: bytes, qos, properties):
-    print(f"Received message on topic {topic}: {payload}")
+    # print(f"Received message on topic {topic}: {payload}")
 
     """
     {
@@ -32,9 +30,12 @@ def callback_mqtt_message_handler(nodes, client, topic, payload: bytes, qos, pro
     """
     message = payload.decode('utf-8')
     try:
-        data: dict = json.loads(message)
+        data: dict[str, float] = json.loads(message)
 
         for name, value in data.items():
+            name = name.capitalize()
+            # print(f"setting value: {name} = {value}")
+
             if name in nodes:
                 asyncio.create_task(nodes[name].set_value(value))
     
@@ -56,6 +57,8 @@ async def main():
     _logger = logging.getLogger(__name__)
     # setup our server
     server = Server()
+    server.iserver.history_manager.set_storage(HistoryMongoDB())
+    
     await server.init()
     mqtt_channel = await mqtt_init()
 
@@ -90,6 +93,8 @@ async def main():
         for variable in variables:
             node_val = await cond.add_variable(idx, variable, 0.0)
             nodes_variables[variable] = node_val
+
+            await server.iserver.enable_history_data_change(node_val)
             
     print("Nodes Variables:", nodes_variables)
     mqtt_channel.client.on_message = lambda *args: callback_mqtt_message_handler(nodes_variables, *args)

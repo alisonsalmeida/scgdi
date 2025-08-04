@@ -11,7 +11,7 @@ async def task_sensor_electrical(channel):
 
 		channel.client.publish(
 			'scgdi/sensor/electrical', 
-			{'Voltage': voltage, 'Current': current, 'Power': power}
+			{'voltage': voltage, 'current': current, 'power': power}
 		)
 
 		await asyncio.sleep(1)
@@ -25,7 +25,7 @@ async def task_sensor_vibration(channel):
 
 		channel.client.publish(
 			'scgdi/sensor/vibration', 
-			{'Accell_X': accell_x, 'Accell_Y': accell_y, 'Accell_Z': accell_z}
+			{'accell_X': accell_x, 'accell_Y': accell_y, 'accell_Z': accell_z}
 		)
 
 		await asyncio.sleep(1)
@@ -37,7 +37,7 @@ async def task_sensor_environment(channel):
 
 		channel.client.publish(
 			'scgdi/sensor/environment', 
-			{'Temperature': temperature, 'Humidity': humidity}
+			{'temperature': temperature, 'humidity': humidity}
 		)
 
 		await asyncio.sleep(1)
