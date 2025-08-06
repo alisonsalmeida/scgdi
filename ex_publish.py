@@ -11,7 +11,7 @@ async def task_sensor_electrical(channel):
 
 		channel.client.publish(
 			'scgdi/sensor/electrical', 
-			{'voltage': voltage, 'current': current, 'power': power}
+			{'Voltage': voltage, 'Current': current, 'Power': power}
 		)
 
 		await asyncio.sleep(1)
@@ -47,8 +47,8 @@ async def main():
 	channel = MQTTChannel()
 	await channel.init()
 	asyncio.create_task(task_sensor_electrical(channel))
-	asyncio.create_task(task_sensor_environment(channel))
-	asyncio.create_task(task_sensor_vibration(channel))	
+	# asyncio.create_task(task_sensor_environment(channel))
+	# asyncio.create_task(task_sensor_vibration(channel))	
 
 	await asyncio.Event().wait()
 

@@ -57,7 +57,7 @@ async def main():
     _logger = logging.getLogger(__name__)
     # setup our server
     server = Server()
-    server.iserver.history_manager.set_storage(HistoryMongoDB())
+    server.iserver.history_manager.set_storage(HistoryMongoDB(server))
     
     await server.init()
     mqtt_channel = await mqtt_init()
@@ -96,18 +96,11 @@ async def main():
 
             await server.iserver.enable_history_data_change(node_val)
             
-    print("Nodes Variables:", nodes_variables)
     mqtt_channel.client.on_message = lambda *args: callback_mqtt_message_handler(nodes_variables, *args)
 
     _logger.info("Starting server!")
     async with server:
         while True:
-            for name, node in nodes_variables.items():
-                value = await node.get_value()
-                new_value = value + 0.1  # Simulate a change in value
-
-                await node.set_value(new_value)
-
             await asyncio.sleep(1)
             
 
