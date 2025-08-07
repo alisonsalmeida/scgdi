@@ -1,10 +1,12 @@
 from ex_mqtt import MQTTChannel
 from ex_opcua_hda import HistoryMongoDB
 from asyncua import Server
+from asyncua.ua import ObjectIds, VariantType, Variant, LocalizedText
 
 import asyncio
 import logging
 import json
+import random
 
 
 def callback_mqtt_message_handler(nodes, client, topic, payload: bytes, qos, properties):
@@ -95,15 +97,49 @@ async def main():
             nodes_variables[variable] = node_val
 
             await server.iserver.enable_history_data_change(node_val)
-            
-    mqtt_channel.client.on_message = lambda *args: callback_mqtt_message_handler(nodes_variables, *args)
+    
+    # etype = await server.create_custom_event_type(
+    #     idx,
+    #     "MyFirstEvent",
+    #     ObjectIds.BaseEventType,
+    #     [("MyNumericProperty", VariantType.Float), ("MyStringProperty", VariantType.String)],
+    # )
+    # myevgen = await server.get_event_generator(etype, sub_condition_monitoring)
 
+    etype = await server.create_custom_event_type(
+        idx,
+        "ConditionMonitoringEvent",
+        ObjectIds.BaseEventType,
+        [("Current", VariantType.Float), ("Temperature", VariantType.Float)],
+    )
+
+    event_generator = await server.get_event_generator(etype, sub_condition_monitoring)
+    # server.iserver.enable_history_event(myobj, period=None)
+    await server.iserver.enable_history_event(sub_condition_monitoring, period=None)
+
+    # await server.start()
+    mqtt_channel.client.on_message = lambda *args: callback_mqtt_message_handler(nodes_variables, *args)
     _logger.info("Starting server!")
     async with server:
+        count = 0
+
         while True:
+            if count > 3:
+                event_generator.event.Message = LocalizedText("Contador passou de 10!")
+                event_generator.event.Severity = random.randint(800, 1000)
+
+                event_generator.event.Current = await nodes_variables["Current"].get_value()
+                event_generator.event.Temperature = await nodes_variables["Temperature"].get_value()
+
+                await event_generator.trigger()
+                count = 0
+
+            else:
+                count += 1
+
+            # await myevgen2.trigger(message="This is MySecondEvent " + str(count))
             await asyncio.sleep(1)
             
-
 
 if __name__ == "__main__":
     # logging.basicConfig(level=logging.INFO)
