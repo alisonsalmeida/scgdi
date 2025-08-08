@@ -1,7 +1,8 @@
 from ex_mqtt import MQTTChannel
 from ex_opcua_hda import HistoryMongoDB
-from asyncua import Server
+from asyncua import Server, Client
 from asyncua.ua import ObjectIds, VariantType, Variant, LocalizedText
+from datetime import datetime
 
 import asyncio
 import logging
@@ -55,6 +56,20 @@ async def mqtt_init():
 
     return mqtt_channel
 
+
+async def task_register_discovery(server: Server, registration_interval=10):
+    while True:
+        try:
+            async with Client("opc.tcp://192.168.0.238:4840") as client:
+                await client.register_server(server)
+
+        except Exception as e:
+            print(f"Error registering server: {e}")
+
+        finally:
+            await asyncio.sleep(registration_interval)
+
+
 async def main():
     _logger = logging.getLogger(__name__)
     # setup our server
@@ -64,7 +79,16 @@ async def main():
     await server.init()
     mqtt_channel = await mqtt_init()
 
-    server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
+    server.set_endpoint("opc.tcp://0.0.0.0:4841")
+    await server.set_build_info(
+        product_uri="http://examples.freeopcua.github.io",
+        manufacturer_name="Almeida LTDA",
+        product_name="aas-opcua-server",
+        software_version="1.0.0",
+        build_number="1",
+        build_date=datetime.utcnow(),
+    )
+    await server.set_application_uri("urn:almeida:aas-opcua-server")
 
     # set up our own namespace, not really necessary but should as spec
     uri = "http://examples.freeopcua.github.io"
@@ -119,6 +143,8 @@ async def main():
 
     # await server.start()
     mqtt_channel.client.on_message = lambda *args: callback_mqtt_message_handler(nodes_variables, *args)
+    asyncio.create_task(task_register_discovery(server, registration_interval=10))
+
     _logger.info("Starting server!")
     async with server:
         count = 0
