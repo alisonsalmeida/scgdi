@@ -78,7 +78,7 @@ Motor50CV
 
 ## 🕓 Histórico
 
-  * Armazene o histórico das variáveis elétricas e temperatura da carcaça, com resolução de 1s.
+  * Armazene o histórico das variáveis elétricas e temperatura da carcaça, com resolução de cada sensor.
 
   * Armazene o histórico de eventos/alarmes em um banco local ou em arquivo.
 
