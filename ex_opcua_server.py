@@ -79,7 +79,7 @@ async def main():
     await server.init()
     mqtt_channel = await mqtt_init()
 
-    server.set_endpoint("opc.tcp://0.0.0.0:4841")
+    server.set_endpoint("opc.tcp://192.168.0.238:4841")
     await server.set_build_info(
         product_uri="http://examples.freeopcua.github.io",
         manufacturer_name="Almeida LTDA",
@@ -89,6 +89,8 @@ async def main():
         build_date=datetime.utcnow(),
     )
     await server.set_application_uri("urn:almeida:aas-opcua-server")
+    server.name = "Almeida AAS - OPCUA Server"
+    server.manufacturer_name = "Almeida LTDA"
 
     # set up our own namespace, not really necessary but should as spec
     uri = "http://examples.freeopcua.github.io"
