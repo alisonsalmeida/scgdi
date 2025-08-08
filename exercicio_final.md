@@ -21,7 +21,7 @@
 | ----------- | ------------------ | ---------------------------------------------------------------------------------------------- | ---------- |
 | Electrical  | Sensor Elétrico    | Tensão (3 fases), Corrente (3 fases), Potência (3), Energia (3), Fator de Potência, Frequência | A cada 5s  |
 | Environment | Sensor Ambiental   | Temperatura, Umidade, Temperatura da Carcaça                                                   | A cada 5s  |
-| Vibration   | Sensor de Vibração | Vibração Axial, Vibração Radial                                                                | A cada 2s  |
+| Vibration   | Sensor de Vibração | Vibração Axial, Vibração Radial                                                                | A cada 60s  |
 
 ## 📂 Organização dos Nodeset OPC UA
 
