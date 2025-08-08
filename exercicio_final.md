@@ -3,7 +3,7 @@
 
 ### Desenvolver um servidor OPC UA com suporte a:
 
-  * Discovery (Local e Global)
+  * Discovery Local
   * Alarmes e Eventos
   * Histórico de Variáveis
   * Histórico de Eventos
