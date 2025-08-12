@@ -3,7 +3,7 @@
 
 ### Desenvolver um servidor OPC UA com suporte a:
 
-  * Discovery (Local e Global)
+  * Discovery Local
   * Alarmes e Eventos
   * Histórico de Variáveis
   * Histórico de Eventos
@@ -19,9 +19,9 @@
 
 | Categoria   | Sensor             | Variáveis                                                                                      | Frequência |
 | ----------- | ------------------ | ---------------------------------------------------------------------------------------------- | ---------- |
-| Electrical  | Sensor Elétrico    | Tensão (3 fases), Corrente (3 fases), Potência (3), Energia (3), Fator de Potência, Frequência | A cada 1s  |
+| Electrical  | Sensor Elétrico    | Tensão (3 fases), Corrente (3 fases), Potência (3), Energia (3), Fator de Potência, Frequência | A cada 5s  |
 | Environment | Sensor Ambiental   | Temperatura, Umidade, Temperatura da Carcaça                                                   | A cada 5s  |
-| Vibration   | Sensor de Vibração | Vibração Axial, Vibração Radial                                                                | A cada 2s  |
+| Vibration   | Sensor de Vibração | Vibração Axial, Vibração Radial                                                                | A cada 60s  |
 
 ## 📂 Organização dos Nodeset OPC UA
 
@@ -78,7 +78,7 @@ Motor50CV
 
 ## 🕓 Histórico
 
-  * Armazene o histórico das variáveis elétricas e temperatura da carcaça, com resolução de 1s.
+  * Armazene o histórico das variáveis elétricas e temperatura da carcaça, com resolução de cada sensor.
 
   * Armazene o histórico de eventos/alarmes em um banco local ou em arquivo.
 
